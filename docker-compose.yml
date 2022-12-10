@@ -1,0 +1,69 @@
+x-service-default-base: &default-base
+  build:
+    args:
+      GID: ${GID:-0}
+      UID: ${UID:-0}
+    context: Dockerfile.d/default
+  command:
+    - zsh
+    - --login
+    - -c
+    - |
+      sleep infinity
+  init: true
+  user: ${UID:-0}:${GID:-0}
+  volumes:
+    - .:/workspace
+  working_dir: /workspace
+
+services:
+  client:
+    <<: *default-base
+    command:
+      - zsh
+      - --login
+      - -c
+      - |
+        sleep infinity
+    working_dir: /workspace/client
+  server-0.9:
+    <<: *default-base
+    command:
+      - zsh
+      - --login
+      - -c
+      - |
+        black .
+        autoflake --in-place --remove-unused-variables .
+        python3 server.py
+    working_dir: /workspace/server-0.9
+
+  # for Prettier Code Formatter
+  workspace:
+    build:
+      args:
+        GID: ${GID:-0}
+        UID: ${UID:-0}
+      context: Dockerfile.d/workspace
+    command:
+      - zsh
+      - --login
+      - -c
+      - |
+        npm-check-updates --upgrade
+        npm install
+        npm audit fix
+        sort-package-json
+        sleep infinity
+    init: true
+    user: ${UID:-0}:${GID:-0}
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+
+version: "3.9"
+volumes:
+  home-developer:
+    driver: local
+  home-root:
+    driver: local

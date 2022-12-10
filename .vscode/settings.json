@@ -1,0 +1,9 @@
+{
+  "[python]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    }
+  },
+  "python.formatting.provider": "black",
+  "editor.formatOnSave": true
+}
